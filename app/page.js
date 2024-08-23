@@ -1,114 +1,144 @@
 "use client";
-import { Box, Button, Stack, TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useRef } from "react";
+import { Box, Button, Typography, AppBar, Toolbar } from "@mui/material";
+import Link from "next/link";
+import * as THREE from "three";
 
-export default function Home() {
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      content: `Hi! I'm the Rate My Professor support assistant. How can I help you today?`,
-    },
-  ]);
-  const [message, setMessage] = useState("");
-  // We'll add more code here in the following steps
-  const sendMessage = async () => {
-    setMessage("");
-    setMessages((messages) => [
-      ...messages,
-      { role: "user", content: message },
-      { role: "assistant", content: "" },
-    ]);
+export default function LandingPage() {
+  const mountRef = useRef(null);
 
-    const response = fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify([...messages, { role: "user", content: message }]),
-    }).then(async (res) => {
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let result = "";
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-      return reader.read().then(function processText({ done, value }) {
-        if (done) {
-          return result;
-        }
-        const text = decoder.decode(value || new Uint8Array(), {
-          stream: true,
-        });
-        setMessages((messages) => {
-          let lastMessage = messages[messages.length - 1];
-          let otherMessages = messages.slice(0, messages.length - 1);
-          return [
-            ...otherMessages,
-            { ...lastMessage, content: lastMessage.content + text },
-          ];
-        });
-        return reader.read().then(processText);
-      });
+    // Set up the scene
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 1);
+
+    mountRef.current.appendChild(renderer.domElement);
+
+    // Add stars
+    const starGeometry = new THREE.BufferGeometry();
+    const starMaterial = new THREE.PointsMaterial({
+      color: 0x888888,
+      size: 0.5,
+      sizeAttenuation: true,
     });
-  };
+    const starVertices = [];
+
+    for (let i = 0; i < 10000; i++) {
+      const x = THREE.MathUtils.randFloatSpread(1000);
+      const y = THREE.MathUtils.randFloatSpread(1000);
+      const z = THREE.MathUtils.randFloatSpread(1000);
+
+      starVertices.push(x, y, z);
+    }
+
+    starGeometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(starVertices, 3)
+    );
+
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
+    camera.position.z = 5;
+
+    const animate = function () {
+      requestAnimationFrame(animate);
+
+      // Rotate stars
+      stars.rotation.x += 0.0005;
+      stars.rotation.y += 0.0005;
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    // Handle resizing
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Clean up on unmount
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("resize", handleResize);
+      }
+      if (mountRef.current) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
+    };
+  }, []);
 
   return (
     <Box
-      width="100vw"
-      height="100vh"
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
+      sx={{
+        overflow: "hidden",
+        position: "relative",
+        minHeight: "100vh",
+        backgroundColor: "#000",
+      }}
     >
-      <Stack
-        direction={"column"}
-        width="500px"
-        height="700px"
-        border="1px solid black"
-        p={2}
-        spacing={3}
+      <AppBar position="static" sx={{ backgroundColor: "#000" }}>
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: "#fff" }}>
+            RPM RAG
+          </Typography>
+          <Link href="/chat" passHref>
+            <Button sx={{ color: "#fff" }}>Go to Chat</Button>
+          </Link>
+        </Toolbar>
+      </AppBar>
+
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        height="80vh"
+        textAlign="center"
+        p={4}
+        sx={{ position: "relative", zIndex: 1 }}
       >
-        <Stack
-          direction={"column"}
-          spacing={2}
-          flexGrow={1}
-          overflow="auto"
-          maxHeight="100%"
-        >
-          {messages.map((message, index) => (
-            <Box
-              key={index}
-              display="flex"
-              justifyContent={
-                message.role === "assistant" ? "flex-start" : "flex-end"
-              }
-            >
-              <Box
-                bgcolor={
-                  message.role === "assistant"
-                    ? "primary.main"
-                    : "secondary.main"
-                }
-                color="white"
-                borderRadius={16}
-                p={3}
-              >
-                {message.content}
-              </Box>
-            </Box>
-          ))}
-        </Stack>
-        <Stack direction={"row"} spacing={2}>
-          <TextField
-            label="Message"
-            fullWidth
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <Button variant="contained" onClick={sendMessage}>
-            Send
+        <Typography variant="h2" gutterBottom sx={{ color: "#fff" }}>
+          Welcome to RPM RAG
+        </Typography>
+        <Typography variant="h5" gutterBottom sx={{ color: "#fff" }}>
+          Your AI-powered assistant for finding and reviewing professors. Get insights and generate reviews with the help of AI!
+        </Typography>
+        <Link href="/chat" passHref>
+          <Button variant="contained" color="primary" sx={{ mt: 4 }}>
+            Start Chatting
           </Button>
-        </Stack>
-      </Stack>
+        </Link>
+      </Box>
+
+      <Box
+        ref={mountRef}
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
+        }}
+      />
     </Box>
   );
 }
