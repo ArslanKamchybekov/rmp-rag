@@ -98,7 +98,7 @@ export default function LandingPage() {
       <AppBar position="static" sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 700 }}>
-            RPM RAG
+            ProfPal
           </Typography>
           <Link href="/chat" passHref>
             <Button sx={{ color: "#ffffff", border: "1px solid #ffffff", marginLeft: 2 }}>
@@ -122,7 +122,7 @@ export default function LandingPage() {
         }}
       >
         <Typography variant="h2" gutterBottom sx={{ fontWeight: 700, color: "#ffffff" }}>
-          Welcome to RPM RAG
+          Welcome to ProfPal
         </Typography>
         <Typography variant="h5" gutterBottom sx={{ color: "#aaaaaa" }}>
           Your AI-powered assistant for finding and reviewing professors. Get insights and generate reviews with the help of AI!

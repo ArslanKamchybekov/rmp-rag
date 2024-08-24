@@ -6,7 +6,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: `Hi! I'm the RPM RAG assistant. How can I help you today?`,
+      content: `Hi! I'm ProfPal. You're Rate My Professor RAG assistant. How can I help you today?`,
     },
   ]);
   const [message, setMessage] = useState("");
@@ -84,7 +84,7 @@ export default function ChatPage() {
             borderBottom: "1px solid #00ffff",  // Cyan border for separation
           }}
         >
-          <Typography variant="h6">Chat with RPM RAG Assistant</Typography>
+          <Typography variant="h6">Chat with ProfPal Assistant</Typography>
         </Box>
         <Stack
           direction="column"
