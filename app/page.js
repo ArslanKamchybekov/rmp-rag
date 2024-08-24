@@ -128,7 +128,7 @@ export default function LandingPage() {
           Your AI-powered assistant for finding and reviewing professors. Get insights and generate reviews with the help of AI!
         </Typography>
         <Link href="/chat" passHref>
-          <Button variant="contained" color="primary" sx={{ mt: 4, px: 4, py: 1.5, fontSize: "1.2rem" }}>
+          <Button variant="contained" color="primary" sx={{ mt:4, px: 4, py: 1.5, fontSize: "1.2rem", borderRadius: "50px", }}>
             Start Chatting
           </Button>
         </Link>
