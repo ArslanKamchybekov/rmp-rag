@@ -28,7 +28,7 @@ export default function LandingPage() {
     const starGeometry = new THREE.BufferGeometry();
     const starMaterial = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 0.7,
+      size: 0.4,  // Decreased size of stars
       sizeAttenuation: true,
     });
     const starVertices = [];
@@ -95,19 +95,6 @@ export default function LandingPage() {
         color: "#ffffff",
       }}
     >
-      <AppBar position="static" sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 700 }}>
-            ProfPal
-          </Typography>
-          <Link href="/chat" passHref>
-            <Button sx={{ color: "#ffffff", border: "1px solid #ffffff", marginLeft: 2 }}>
-              Go to Chat
-            </Button>
-          </Link>
-        </Toolbar>
-      </AppBar>
-
       <Container
         maxWidth="md"
         sx={{
@@ -128,7 +115,21 @@ export default function LandingPage() {
           Your AI-powered assistant for finding and reviewing professors. Get insights and generate reviews with the help of AI!
         </Typography>
         <Link href="/chat" passHref>
-          <Button variant="contained" color="primary" sx={{ mt:4, px: 4, py: 1.5, fontSize: "1.2rem", borderRadius: "50px", }}>
+          <Button 
+            variant="contained" 
+            sx={{ 
+              mt: 4, 
+              px: 4, 
+              py: 1.5, 
+              fontSize: "1.2rem", 
+              borderRadius: "50px", 
+              backgroundColor: "#00ffff", // Cyan color
+              color: "#090909", // Contrast color for text
+              "&:hover": {
+                backgroundColor: "#00e5e5", // Slightly darker cyan on hover
+              },
+            }}
+          >
             Start Chatting
           </Button>
         </Link>

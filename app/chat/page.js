@@ -1,6 +1,7 @@
 "use client";
+import { useEffect, useRef, useState } from "react";
 import { Box, Button, Stack, TextField, Typography, Paper } from "@mui/material";
-import { useState } from "react";
+import * as THREE from "three";
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([
@@ -10,6 +11,7 @@ export default function ChatPage() {
     },
   ]);
   const [message, setMessage] = useState("");
+  const mountRef = useRef(null);
 
   const sendMessage = async () => {
     if (message.trim() === "") return; // Prevent sending empty messages
@@ -51,17 +53,102 @@ export default function ChatPage() {
     });
   };
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Set up the scene
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 1);
+
+    mountRef.current.appendChild(renderer.domElement);
+
+    // Add stars
+    const starGeometry = new THREE.BufferGeometry();
+    const starMaterial = new THREE.PointsMaterial({
+      color: 0x888888,
+      size: 0.3,
+      sizeAttenuation: true,
+    });
+    const starVertices = [];
+
+    for (let i = 0; i < 5000; i++) {
+      const x = THREE.MathUtils.randFloatSpread(2000);
+      const y = THREE.MathUtils.randFloatSpread(2000);
+      const z = THREE.MathUtils.randFloatSpread(2000);
+
+      starVertices.push(x, y, z);
+    }
+
+    starGeometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(starVertices, 3)
+    );
+
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
+    camera.position.z = 500;
+
+    const animate = function () {
+      requestAnimationFrame(animate);
+
+      // Rotate stars
+      stars.rotation.x += 0.0005;
+      stars.rotation.y += 0.0005;
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    // Handle resizing
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Clean up on unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (mountRef.current) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
+    };
+  }, []);
+
   return (
     <Box
       width="100vw"
       height="100vh"
       display="flex"
-      flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      bgcolor="grey"  // Dark background for the entire app
-      p={3}
+      sx={{ position: "relative", overflow: "hidden" }}
     >
+      <Box
+        ref={mountRef}
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
+        }}
+      />
       <Paper
         elevation={4}
         sx={{
@@ -72,16 +159,17 @@ export default function ChatPage() {
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          bgcolor: "#121212",  // Dark blue for the chat window
+          bgcolor: "#121212",
+          zIndex: 1,
         }}
       >
         <Box
           sx={{
-            bgcolor: "#1a1a1d",  // Slightly lighter shade for the header
-            color: "#00ffff",  // Cyan text for the header
+            bgcolor: "#1a1a1d",
+            color: "#00ffff",
             p: 2,
             textAlign: "center",
-            borderBottom: "1px solid #00ffff",  // Cyan border for separation
+            borderBottom: "1px solid #00ffff",
           }}
         >
           <Typography variant="h6">Chat with ProfPal Assistant</Typography>
@@ -93,7 +181,7 @@ export default function ChatPage() {
             flexGrow: 1,
             overflowY: "auto",
             p: 2,
-            bgcolor: "#0d0d0d",  // Darker background for messages
+            bgcolor: "#0d0d0d",
           }}
         >
           {messages.map((message, index) => (
@@ -108,8 +196,8 @@ export default function ChatPage() {
                 sx={{
                   bgcolor:
                     message.role === "assistant"
-                      ? "#004d4d"  // Dark cyan for assistant messages
-                      : "#1c1c1c",  // Dark gray for user messages
+                      ? "#004d4d"
+                      : "#1c1c1c",
                   color: "white",
                   borderRadius: 2,
                   p: 2,
@@ -126,8 +214,8 @@ export default function ChatPage() {
           direction="row"
           spacing={2}
           p={2}
-          bgcolor="#121212"  // Match chat window background for input area
-          borderTop="1px solid #00ffff"  // Cyan border for separation
+          bgcolor="#121212"
+          borderTop="1px solid #00ffff"
         >
           <TextField
             label="Type your message"
@@ -139,13 +227,13 @@ export default function ChatPage() {
               if (e.key === "Enter") sendMessage();
             }}
             sx={{
-              bgcolor: "#1a1a1d",  // Darker input field background
+              bgcolor: "#1a1a1d",
               borderRadius: 1,
-              input: { color: "#ffffff" },  // White text in the input field
-              label: { color: "#00ffff" },  // Cyan label color
+              input: { color: "#ffffff" },
+              label: { color: "#00ffff" },
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  borderColor: "#00ffff",  // Cyan border for the input field
+                  borderColor: "#00ffff",
                 },
                 "&:hover fieldset": {
                   borderColor: "#00ffff",
@@ -160,10 +248,10 @@ export default function ChatPage() {
             variant="contained"
             onClick={sendMessage}
             sx={{
-              bgcolor: "#00b8b8",  // Bright cyan for the send button
+              bgcolor: "#00b8b8",
               color: "#ffffff",
               "&:hover": {
-                bgcolor: "#008080",  // Darker cyan on hover
+                bgcolor: "#008080",
               },
             }}
           >
