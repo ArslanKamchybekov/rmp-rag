@@ -13,8 +13,10 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
+    "@pinecone-database/pinecone": "^3.0.1",
     "next": "14.2.6",
     "openai": "^4.56.0",
+    "pinecone": "^0.1.0",
     "react": "^18",
     "react-dom": "^18",
     "three": "^0.167.1"
