@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Stack, TextField } from "@mui/material";
+import { Box, Button, Stack, TextField, Typography, Paper } from "@mui/material";
 import { useState } from "react";
 
 export default function ChatPage() {
@@ -12,6 +12,7 @@ export default function ChatPage() {
   const [message, setMessage] = useState("");
 
   const sendMessage = async () => {
+    if (message.trim() === "") return; // Prevent sending empty messages
     setMessage("");
     setMessages((messages) => [
       ...messages,
@@ -58,21 +59,42 @@ export default function ChatPage() {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
+      bgcolor="grey"  // Dark background for the entire app
+      p={3}
     >
-      <Stack
-        direction={"column"}
-        width="500px"
-        height="700px"
-        border="1px solid black"
-        p={2}
-        spacing={3}
+      <Paper
+        elevation={4}
+        sx={{
+          width: "90%",
+          maxWidth: "600px",
+          height: "80%",
+          borderRadius: 4,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          bgcolor: "#121212",  // Dark blue for the chat window
+        }}
       >
+        <Box
+          sx={{
+            bgcolor: "#1a1a1d",  // Slightly lighter shade for the header
+            color: "#00ffff",  // Cyan text for the header
+            p: 2,
+            textAlign: "center",
+            borderBottom: "1px solid #00ffff",  // Cyan border for separation
+          }}
+        >
+          <Typography variant="h6">Chat with RPM RAG Assistant</Typography>
+        </Box>
         <Stack
-          direction={"column"}
+          direction="column"
           spacing={2}
-          flexGrow={1}
-          overflow="auto"
-          maxHeight="100%"
+          sx={{
+            flexGrow: 1,
+            overflowY: "auto",
+            p: 2,
+            bgcolor: "#0d0d0d",  // Darker background for messages
+          }}
         >
           {messages.map((message, index) => (
             <Box
@@ -83,32 +105,72 @@ export default function ChatPage() {
               }
             >
               <Box
-                bgcolor={
-                  message.role === "assistant"
-                    ? "primary.main"
-                    : "secondary.main"
-                }
-                color="white"
-                borderRadius={16}
-                p={3}
+                sx={{
+                  bgcolor:
+                    message.role === "assistant"
+                      ? "#004d4d"  // Dark cyan for assistant messages
+                      : "#1c1c1c",  // Dark gray for user messages
+                  color: "white",
+                  borderRadius: 2,
+                  p: 2,
+                  maxWidth: "70%",
+                  boxShadow: 1,
+                }}
               >
                 {message.content}
               </Box>
             </Box>
           ))}
         </Stack>
-        <Stack direction={"row"} spacing={2}>
+        <Stack
+          direction="row"
+          spacing={2}
+          p={2}
+          bgcolor="#121212"  // Match chat window background for input area
+          borderTop="1px solid #00ffff"  // Cyan border for separation
+        >
           <TextField
-            label="Message"
+            label="Type your message"
+            variant="outlined"
             fullWidth
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") sendMessage();
+            }}
+            sx={{
+              bgcolor: "#1a1a1d",  // Darker input field background
+              borderRadius: 1,
+              input: { color: "#ffffff" },  // White text in the input field
+              label: { color: "#00ffff" },  // Cyan label color
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#00ffff",  // Cyan border for the input field
+                },
+                "&:hover fieldset": {
+                  borderColor: "#00ffff",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#00ffff",
+                },
+              },
+            }}
           />
-          <Button variant="contained" onClick={sendMessage}>
+          <Button
+            variant="contained"
+            onClick={sendMessage}
+            sx={{
+              bgcolor: "#00b8b8",  // Bright cyan for the send button
+              color: "#ffffff",
+              "&:hover": {
+                bgcolor: "#008080",  // Darker cyan on hover
+              },
+            }}
+          >
             Send
           </Button>
         </Stack>
-      </Stack>
+      </Paper>
     </Box>
   );
 }

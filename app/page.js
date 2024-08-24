@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { Box, Button, Typography, AppBar, Toolbar } from "@mui/material";
+import { Box, Button, Typography, AppBar, Toolbar, Container } from "@mui/material";
 import Link from "next/link";
 import * as THREE from "three";
 
@@ -20,20 +20,20 @@ export default function LandingPage() {
     );
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 1);
+    renderer.setClearColor(0x090909, 1);
 
     mountRef.current.appendChild(renderer.domElement);
 
     // Add stars
     const starGeometry = new THREE.BufferGeometry();
     const starMaterial = new THREE.PointsMaterial({
-      color: 0x888888,
-      size: 0.5,
+      color: 0xffffff,
+      size: 0.7,
       sizeAttenuation: true,
     });
     const starVertices = [];
 
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < 15000; i++) {
       const x = THREE.MathUtils.randFloatSpread(1000);
       const y = THREE.MathUtils.randFloatSpread(1000);
       const z = THREE.MathUtils.randFloatSpread(1000);
@@ -55,8 +55,8 @@ export default function LandingPage() {
       requestAnimationFrame(animate);
 
       // Rotate stars
-      stars.rotation.x += 0.0005;
-      stars.rotation.y += 0.0005;
+      stars.rotation.x += 0.0003;
+      stars.rotation.y += 0.0003;
 
       renderer.render(scene, camera);
     };
@@ -91,42 +91,48 @@ export default function LandingPage() {
         overflow: "hidden",
         position: "relative",
         minHeight: "100vh",
-        backgroundColor: "#000",
+        backgroundColor: "#090909",
+        color: "#ffffff",
       }}
     >
-      <AppBar position="static" sx={{ backgroundColor: "#000" }}>
+      <AppBar position="static" sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: "#fff" }}>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 700 }}>
             RPM RAG
           </Typography>
           <Link href="/chat" passHref>
-            <Button sx={{ color: "#fff" }}>Go to Chat</Button>
+            <Button sx={{ color: "#ffffff", border: "1px solid #ffffff", marginLeft: 2 }}>
+              Go to Chat
+            </Button>
           </Link>
         </Toolbar>
       </AppBar>
 
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        height="80vh"
-        textAlign="center"
-        p={4}
-        sx={{ position: "relative", zIndex: 1 }}
+      <Container
+        maxWidth="md"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+          textAlign: "center",
+          zIndex: 1,
+          position: "relative",
+        }}
       >
-        <Typography variant="h2" gutterBottom sx={{ color: "#fff" }}>
+        <Typography variant="h2" gutterBottom sx={{ fontWeight: 700, color: "#ffffff" }}>
           Welcome to RPM RAG
         </Typography>
-        <Typography variant="h5" gutterBottom sx={{ color: "#fff" }}>
+        <Typography variant="h5" gutterBottom sx={{ color: "#aaaaaa" }}>
           Your AI-powered assistant for finding and reviewing professors. Get insights and generate reviews with the help of AI!
         </Typography>
         <Link href="/chat" passHref>
-          <Button variant="contained" color="primary" sx={{ mt: 4 }}>
+          <Button variant="contained" color="primary" sx={{ mt: 4, px: 4, py: 1.5, fontSize: "1.2rem" }}>
             Start Chatting
           </Button>
         </Link>
-      </Box>
+      </Container>
 
       <Box
         ref={mountRef}
@@ -137,6 +143,7 @@ export default function LandingPage() {
           width: "100%",
           height: "100%",
           zIndex: 0,
+          pointerEvents: "none",
         }}
       />
     </Box>
